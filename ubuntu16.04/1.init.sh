@@ -4,4 +4,5 @@ sudo mv /etc/apt/sources.list /etc/apt/sources.list.bk
 sudo cp ./apt.sources.list /etc/apt/sources.list
 sudo apt-get update -y
 
-sudo bash tools/install.sh
+cd tools
+sudo ./install.sh

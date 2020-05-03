@@ -4,7 +4,7 @@ set -e
 CURRENT_DIR=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 source ${CURRENT_DIR}/../common/common.sh
 
-[ $(id -u) != "0" ] && { ansi -n --bold --bg-red "请用 root 账户执行本脚本"; exit 1; }
+[ $(id -u) != "0" ] && { ansi -n --bold --bg-red "please run by root"; exit 1; }
 
 MYSQL_ROOT_PASSWORD=`random_string`
 
@@ -66,19 +66,19 @@ function install_others {
 }
 
 function install_composer {
-    wget https://dl.laravel-china.org/composer.phar -O /usr/local/bin/composer
+    curl https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin/ --filename=composer
     chmod +x /usr/local/bin/composer
     sudo -H -u ${WWW_USER} sh -c  'cd ~ && composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/'
 }
 
-call_function init_system "正在初始化系统" ${LOG_PATH}
-call_function init_repositories "正在初始化软件源" ${LOG_PATH}
-call_function install_basic_softwares "正在安装基础软件" ${LOG_PATH}
-call_function install_php "正在安装 PHP" ${LOG_PATH}
-call_function install_others "正在安装 Mysql / Nginx / Redis / Memcached / Beanstalkd / Sqlite3" ${LOG_PATH}
-call_function install_node_yarn "正在安装 Nodejs / Yarn" ${LOG_PATH}
-call_function install_composer "正在安装 Composer" ${LOG_PATH}
+call_function init_system "init system" ${LOG_PATH}
+call_function init_repositories "init repositories" ${LOG_PATH}
+call_function install_basic_softwares "install basic softwares" ${LOG_PATH}
+call_function install_php "install PHP" ${LOG_PATH}
+call_function install_others "install Mysql / Nginx / Redis / Memcached / Beanstalkd / Sqlite3" ${LOG_PATH}
+call_function install_node_yarn "install Nodejs / Yarn" ${LOG_PATH}
+call_function install_composer "install Composer" ${LOG_PATH}
 
-ansi --green --bold -n "安装完毕"
-ansi --green --bold "Mysql root 密码："; ansi -n --bold --bg-yellow --black ${MYSQL_ROOT_PASSWORD}
-ansi --green --bold -n "请手动执行 source ~/.bash_aliases 使 alias 指令生效。"
+ansi --green --bold -n "All done"
+ansi --green --bold "Mysql root password:"; ansi -n --bold --bg-yellow --black ${MYSQL_ROOT_PASSWORD}
+ansi --green --bold -n "Please run source ~/.bash_aliases to enable alias"

@@ -3,7 +3,7 @@
 CURRENT_DIR=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 source ${CURRENT_DIR}/../common/common.sh
 
-[ $(id -u) != "0" ] && { ansi -n --bold --bg-red "请用 root 账户执行本脚本"; exit 1; }
+[ $(id -u) != "0" ] && { ansi -n --bold --bg-red "please run by root"; exit 1; }
 
 function install_java {
     apt-get install -y openjdk-8-jre
@@ -29,8 +29,8 @@ function install_es_plugins {
     systemctl restart elasticsearch.service
 }
 
-call_function install_java "正在安装 JAVA" ${LOG_PATH}
-call_function install_es "正在安装 Elasticsearch" ${LOG_PATH}
-call_function install_es_plugins "正在安装 Elasticsearch 插件" ${LOG_PATH}
+call_function install_java "install JAVA" ${LOG_PATH}
+call_function install_es "install Elasticsearch" ${LOG_PATH}
+call_function install_es_plugins "install Elasticsearch plugins" ${LOG_PATH}
 
-ansi --green --bold -n "安装完毕"
+ansi --green --bold -n "All Done"

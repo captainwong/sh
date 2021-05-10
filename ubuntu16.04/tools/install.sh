@@ -4,7 +4,7 @@ set -e
 CURRENT_DIR=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 source ${CURRENT_DIR}/../common/common.sh
 
-[ $(id -u) != "0" ] && { ansi -n --bold --bg-red "please run by root"; exit 1; }
+[ $(id -u) != "0" ] && { ansi -n --bold --bg-red "请用 root 账户执行本脚本"; exit 1; }
 
 MYSQL_ROOT_PASSWORD=`random_string`
 
@@ -31,14 +31,16 @@ function init_alias {
 function init_repositories {
     add-apt-repository -y ppa:ondrej/php
     add-apt-repository -y ppa:nginx/stable
-    grep -rl ppa.launchpad.net /etc/apt/sources.list.d/ | xargs sed -i 's/ppa.launchpad.net/launchpad.proxy.ustclug.org/g'
+    grep -rl ppa.launchpad.net /etc/apt/sources.list.d/ | xargs sed -i 's/http:\/\/ppa.launchpad.net/https:\/\/launchpad.proxy.ustclug.org/g'
 
     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
     echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list
 
+    # https://mirrors.tuna.tsinghua.edu.cn/  2021-02-05移除 nodesource 镜像
+
     curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
-    echo 'deb https://mirrors.tuna.tsinghua.edu.cn/nodesource/deb_8.x xenial main' > /etc/apt/sources.list.d/nodesource.list
-    echo 'deb-src https://mirrors.tuna.tsinghua.edu.cn/nodesource/deb_8.x xenial main' >> /etc/apt/sources.list.d/nodesource.list
+    echo 'deb https://deb.nodesource.com/node_10.x xenial main' > /etc/apt/sources.list.d/nodesource.list
+    echo 'deb-src https://deb.nodesource.com/node_10.x xenial main' >> /etc/apt/sources.list.d/nodesource.list
 
     apt-get update
 }
@@ -53,7 +55,7 @@ function install_node_yarn {
 }
 
 function install_php {
-    apt-get install -y php7.2-bcmath php7.2-cli php7.2-curl php7.2-fpm php7.2-gd php7.2-mbstring php7.2-mysql php7.2-opcache php7.2-pgsql php7.2-readline php7.2-xml php7.2-zip php7.2-sqlite3
+    apt-get install -y php7.4-bcmath php7.4-cli php7.4-curl php7.4-fpm php7.4-gd php7.4-mbstring php7.4-mysql php7.4-opcache php7.4-pgsql php7.4-readline php7.4-xml php7.4-zip php7.4-sqlite3 php7.4-redis
 }
 
 function install_others {
@@ -71,14 +73,14 @@ function install_composer {
     sudo -H -u ${WWW_USER} sh -c  'cd ~ && composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/'
 }
 
-call_function init_system "init system" ${LOG_PATH}
-call_function init_repositories "init repositories" ${LOG_PATH}
-call_function install_basic_softwares "install basic softwares" ${LOG_PATH}
-call_function install_php "install PHP" ${LOG_PATH}
-call_function install_others "install Mysql / Nginx / Redis / Memcached / Beanstalkd / Sqlite3" ${LOG_PATH}
-call_function install_node_yarn "install Nodejs / Yarn" ${LOG_PATH}
-call_function install_composer "install Composer" ${LOG_PATH}
+call_function init_system "正在初始化系统" ${LOG_PATH}
+call_function init_repositories "正在初始化软件源" ${LOG_PATH}
+call_function install_basic_softwares "正在安装基础软件" ${LOG_PATH}
+call_function install_php "正在安装 PHP" ${LOG_PATH}
+call_function install_others "正在安装 Mysql / Nginx / Redis / Memcached / Beanstalkd / Sqlite3" ${LOG_PATH}
+call_function install_node_yarn "正在安装 Nodejs / Yarn" ${LOG_PATH}
+call_function install_composer "正在安装 Composer" ${LOG_PATH}
 
-ansi --green --bold -n "All done"
-ansi --green --bold "Mysql root password:"; ansi -n --bold --bg-yellow --black ${MYSQL_ROOT_PASSWORD}
-ansi --green --bold -n "Please run source ~/.bash_aliases to enable alias"
+ansi --green --bold -n "安装完毕"
+ansi --green --bold "Mysql root 密码："; ansi -n --bold --bg-yellow --black ${MYSQL_ROOT_PASSWORD}
+ansi --green --bold -n "请手动执行 source ~/.bash_aliases 使 alias 指令生效。"

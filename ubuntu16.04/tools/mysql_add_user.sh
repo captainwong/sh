@@ -44,3 +44,5 @@ if [[ CREATE_DB -eq 1 ]]; then
 fi
 
 ansi -n --bold --green "数据库 ${DATABASE_NAME} 创建成功";
+
+
